@@ -1,0 +1,18 @@
+<!-- Navigation Bar -->
+<nav class="navbar" *ngIf="authService.isLoggedIn()">
+  <div class="nav-brand">E-Mobile</div>
+  <div class="nav-links">
+    <a routerLink="/products" routerLinkActive="active">Products</a>
+    <a routerLink="/cart" routerLinkActive="active">Cart</a>
+    <a (click)="logout()" class="logout-btn">Logout</a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer">
+  <p>&copy; 2024 MOBILES. All rights reserved.</p>
+</footer>
