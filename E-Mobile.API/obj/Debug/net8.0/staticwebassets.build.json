@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "h/aHOQHLff4WA0OJXCQQbZKFFUbKJppqv8CJBEDCEPM=",
+  "Source": "E-Mobile.API",
+  "BasePath": "_content/E-Mobile.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

@@ -12,7 +12,7 @@ export class ProductService {
       brand: 'Apple',
       price: 129999,
       description: 'The latest iPhone with advanced camera system and A17 Pro chip.',
-      imageUrl: '/assets/images/iphone15pro.jpg',
+      imageUrl: "C:\Users\admin\OneDrive\Desktop\ecommerce\e-mobile\src\app\assets\images\iphone15pro.jpg",
       specifications: {
         screen: '6.7-inch Super Retina XDR display',
         processor: 'A17 Pro chip',
@@ -30,7 +30,7 @@ export class ProductService {
       brand: 'Samsung',
       price: 124999,
       description: 'Samsung\'s flagship with S Pen support and advanced AI features.',
-      imageUrl: '/assets/images/samsungs24ultra.jpg',
+      imageUrl: 'C:\Users\admin\OneDrive\Desktop\ecommerce\e-mobile\src\app\assets\images\samsung24ultra.jpg',
       specifications: {
         screen: '6.8-inch Dynamic AMOLED 2X',
         processor: 'Snapdragon 8 Gen 3',
@@ -48,7 +48,7 @@ export class ProductService {
       brand: 'Google',
       price: 99999,
       description: 'Google\'s flagship with advanced AI camera features.',
-      imageUrl: '/assets/images/pixel8pro.jpg',
+      imageUrl: 'C:\Users\admin\OneDrive\Desktop\ecommerce\e-mobile\src\app\assets\images\oneplus12.jpg',
       specifications: {
         screen: '6.7-inch LTPO OLED',
         processor: 'Google Tensor G3',
@@ -66,7 +66,7 @@ export class ProductService {
       brand: "OnePlus",
       price: 69999,
       description: "Fast and smooth performance with Hasselblad cameras",
-      imageUrl: "/assets/images/oneplus12.jpg",
+      imageUrl: "C:\Users\admin\OneDrive\Desktop\ecommerce\e-mobile\src\app\assets\images\oneplus12.jpg",
       specifications: {
         screen: "6.82-inch AMOLED",
         processor: "Snapdragon 8 Gen 3",
