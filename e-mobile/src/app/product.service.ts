@@ -1,60 +1,159 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-export interface Product {
-  id: number;
+// Define mobile product interface
+export interface MobileProduct {
+  id?: number;
   name: string;
+  description: string;
   price: number;
+  brand: string;
+  category: string;
+  stock: number;
   imageUrl: string;
-  description?: string;
+  features: string[];
+  specifications: string[];
+  // Mobile-specific details
+  screenSize: string;
+  processor: string;
+  ram: string;
+  storage: string;
+  camera: string;
+  battery: string;
+  operatingSystem: string;
+  networkType: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ProductService {
-  private products: Product[] = [
-    { 
-      id: 1, 
-      name: 'Classic T-Shirt', 
-      price: 20, 
-      imageUrl: './assets/tshirt.jpeg',
-      description: 'Comfortable cotton t-shirt in various colors'
-    },
-    { 
-      id: 2, 
-      name: 'Slim Fit Jeans', 
-      price: 50, 
-      imageUrl: './assets/jeans.jpg',
-      description: 'Modern slim fit jeans with stretch fabric'
-    },
-    { 
-      id: 3, 
-      name: 'Winter Jacket', 
-      price: 80, 
-      imageUrl: './assets/jackets.jpg',
-      description: 'Warm and stylish winter jacket'
-    },
-  ];
+  private apiUrl = 'https://localhost:7211/api/products';
 
-  getProducts(): Product[] {
-    return this.products;
+  constructor(private http: HttpClient) { }
+
+  // Get all mobile products
+  getMobileProducts(): Observable<MobileProduct[]> {
+    return this.http.get<any[]>(this.apiUrl)
+      .pipe(
+        map(products => this.processMobileData(products)),
+        catchError(this.handleError)
+      );
   }
 
-  getProduct(id: number): Product | undefined {
-    return this.products.find(p => p.id === id);
+  // Get featured mobile phones
+  getFeaturedMobiles(): Observable<MobileProduct[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/featured`)
+      .pipe(
+        map(products => this.processMobileData(products)),
+        catchError(this.handleError)
+      );
   }
 
-  // Helper method to handle image loading errors
-  handleImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    console.error('Image failed to load:', img.src);
-    // Try to load a different image format if available
-    const currentSrc = img.src;
-    if (currentSrc.endsWith('.jpeg')) {
-      img.src = currentSrc.replace('.jpeg', '.jpg');
-    } else if (currentSrc.endsWith('.jpg')) {
-      img.src = currentSrc.replace('.jpg', '.jpeg');
+  // Get mobiles by brand
+  getMobilesByBrand(brand: string): Observable<MobileProduct[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/brand/${brand}`)
+      .pipe(
+        map(products => this.processMobileData(products)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Get mobiles by price range
+  getMobilesByPriceRange(min: number, max: number): Observable<MobileProduct[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/price?min=${min}&max=${max}`)
+      .pipe(
+        map(products => this.processMobileData(products)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Get mobile phone details
+  getMobileDetails(id: number): Observable<MobileProduct> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`)
+      .pipe(
+        map(product => this.extractMobileDetails(product)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Compare multiple mobile phones
+  compareMobiles(ids: number[]): Observable<MobileProduct[]> {
+    const idsParam = ids.join(',');
+    return this.http.get<any[]>(`${this.apiUrl}/compare?ids=${idsParam}`)
+      .pipe(
+        map(products => this.processMobileData(products)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Search mobiles by keyword
+  searchMobiles(keyword: string): Observable<MobileProduct[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/search?keyword=${keyword}`)
+      .pipe(
+        map(products => this.processMobileData(products)),
+        catchError(this.handleError)
+      );
+  }
+
+  // Helper method to process mobile data
+  private processMobileData(products: any[]): MobileProduct[] {
+    return products.map(product => this.extractMobileDetails(product));
+  }
+
+  // Helper method to extract mobile details
+  private extractMobileDetails(product: any): MobileProduct {
+    // Parse feature strings into objects if needed
+    let features = product.features;
+    let specs = product.specifications;
+    
+    // If features/specs are stored as strings, parse them
+    if (typeof features === 'string') {
+      try {
+        features = JSON.parse(features);
+      } catch {
+        features = [];
+      }
     }
+    
+    if (typeof specs === 'string') {
+      try {
+        specs = JSON.parse(specs);
+      } catch {
+        specs = [];
+      }
+    }
+    
+    // Extract mobile-specific details from specifications
+    const getSpec = (key: string): string => {
+      if (Array.isArray(specs)) {
+        const spec = specs.find((s: string) => s.toLowerCase().includes(key.toLowerCase()));
+        return spec || '';
+      }
+      return '';
+    };
+    
+    return {
+      ...product,
+      features: features,
+      specifications: specs,
+      screenSize: getSpec('screen') || getSpec('display'),
+      processor: getSpec('processor') || getSpec('chipset') || getSpec('cpu'),
+      ram: getSpec('ram') || getSpec('memory'),
+      storage: getSpec('storage'),
+      camera: getSpec('camera'),
+      battery: getSpec('battery'),
+      operatingSystem: getSpec('os') || getSpec('android') || getSpec('ios'),
+      networkType: getSpec('network') || getSpec('5g') || getSpec('4g')
+    };
+  }
+
+  private handleError(error: any) {
+    console.error('API error:', error);
+    return throwError(() => error);
   }
 }
